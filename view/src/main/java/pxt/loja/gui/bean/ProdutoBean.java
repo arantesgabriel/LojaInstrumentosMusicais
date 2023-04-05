@@ -5,22 +5,25 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.event.ActionEvent;
 
 import pxt.etq.domain.business.impl.ProdutoBO;
 import pxt.etq.domain.estoque.Fornecedor;
 import pxt.etq.domain.estoque.Produto;
 import pxt.framework.business.PersistenceService;
-import pxt.framework.business.TransactionException;
 import pxt.framework.faces.controller.CrudController;
+import pxt.framework.faces.controller.CrudState;
 import pxt.framework.faces.controller.SearchFieldController;
 import pxt.framework.faces.exception.CrudException;
+import pxt.framework.persistence.PersistenceException;
+import pxt.framework.validation.ValidationException;
 
 // Sinaliza que essa classe será a controladora
 
 @ManagedBean
 @ViewScoped
 public class ProdutoBean extends CrudController<Produto> {
-	private static final long serialVersionUID = 4069931526797373122L;
+	private static final long serialVersionUID = 1L;
 
 	private Produto domain;
 
@@ -53,11 +56,6 @@ public class ProdutoBean extends CrudController<Produto> {
 
 	@Override
 	protected void antesSalvar() throws CrudException {
-
-		if (getDomain().getDescricao() == null || getDomain().getDescricao().isEmpty()) {
-			this.msgWarn("A descrição é um campo obrigatório");
-		}
-
 		domain.setIndicadorAtivo(true);
 	}
 
@@ -100,14 +98,21 @@ public class ProdutoBean extends CrudController<Produto> {
 	}
 
 	@Override
-	protected void salvar() throws CrudException {
-
+	public void salvar(ActionEvent arg0) {
 		try {
+			this.addToList(getDomain());
+			getEstadoCrud();
+			this.configuraEstado(CrudState.ST_DEFAULT);
 			produtoBO.salvarProduto(domain);
-		} catch (TransactionException e) {
-			msgWarn(e.getMessage());
+			this.msgInfo("Produto cadastrado com sucesso!");
+		} catch (ValidationException e) {
+			this.msgWarn(e.getMessage());
+			e.printStackTrace();
+		} catch (PersistenceException e) {
+			this.msgWarn(e.getMessage());
 			e.printStackTrace();
 		}
+
 	}
 
 }

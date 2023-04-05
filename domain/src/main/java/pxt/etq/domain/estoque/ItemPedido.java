@@ -1,5 +1,7 @@
 package pxt.etq.domain.estoque;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -9,7 +11,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "gabrielpa.tetqitempedido")
-public class ItemPedido {
+public class ItemPedido implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "NUMID")
@@ -34,6 +37,13 @@ public class ItemPedido {
 
 	public void setQuantidade(Integer quantidade) {
 		this.quantidade = quantidade;
+	}
+
+	public Produto getProdutoNaoNulo() {
+		if (produto == null) {
+			return new Produto();
+		}
+		return this.produto;
 	}
 
 }

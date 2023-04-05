@@ -13,6 +13,7 @@
 	xmlns:pxtfc="http://www.peixoto.com.br/jsf/core">
 
 <ui:composition template="/META-INF/facelets/templates/crud.xhtml">
+
 	<ui:param name="form_id" value="formLiberar" />
 	<ui:param name="backingBean" value="#{liberarBean}" />
 	<ui:param name="titulo" value="Liberar Mercadoria" />
@@ -64,9 +65,7 @@
 
 	<ui:define name="colunasTabela" columnsWidth="50%;5%;">
 		<pxtfl:column headerValue="Descrição" value="#{obj.produto.descricao}" />
-		<pxtfl:column headerValue="Estoque"
-			value="#{obj.quantidadeRecebimento}" />
-
+		<pxtfl:column headerValue="Estoque" value="#{obj.quantidade}" />
 
 	</ui:define>
 </ui:composition>

@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @Table(name = "gabrielpa.tetqfornecedor")
 public class Fornecedor implements Serializable {
 	private static final long serialVersionUID = 8510855018349481925L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CODFRNETQ_SEQ")
 	@SequenceGenerator(sequenceName = "CODFRNETQ_SEQ", allocationSize = 1, name = "CODFRNETQ_SEQ")
@@ -39,6 +39,7 @@ public class Fornecedor implements Serializable {
 	}
 
 	public void setNome(String nome) {
+		nome = nome.replaceAll("[^a-zA-Z ]+", "");
 		this.nome = nome;
 	}
 

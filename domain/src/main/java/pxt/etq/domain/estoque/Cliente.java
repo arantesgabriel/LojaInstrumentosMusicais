@@ -39,6 +39,7 @@ public class Cliente implements Serializable {
 	}
 
 	public void setNome(String nome) {
+		nome = nome.replaceAll("[^a-zA-Z ]+", "");
 		this.nome = nome;
 	}
 

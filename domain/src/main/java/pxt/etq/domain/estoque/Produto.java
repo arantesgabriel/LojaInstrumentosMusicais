@@ -47,6 +47,7 @@ public class Produto implements Serializable {
 	}
 
 	public void setDescricao(String descricao) {
+		descricao = descricao.replaceAll("[^a-zA-Z ]+", "");
 		this.descricao = descricao;
 	}
 
@@ -85,7 +86,7 @@ public class Produto implements Serializable {
 		}
 		return this.fornecedor;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

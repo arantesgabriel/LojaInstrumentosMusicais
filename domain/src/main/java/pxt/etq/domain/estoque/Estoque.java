@@ -46,7 +46,7 @@ public class Estoque implements Serializable {
 	public void setQuantidadeRecebimento(Integer quantidadeRecebimento) {
 		this.quantidadeRecebimento = quantidadeRecebimento;
 	}
-	
+
 	public Produto getProdutoNaoNulo() {
 		if (produto == null) {
 			return new Produto();

@@ -13,9 +13,11 @@
 	xmlns:pxtfc="http://www.peixoto.com.br/jsf/core">
 
 <ui:composition template="/META-INF/facelets/templates/crud.xhtml">
+
 	<ui:param name="form_id" value="formReceber" />
 	<ui:param name="backingBean" value="#{receberBean}" />
 	<ui:param name="titulo" value="Receber Mercadoria" />
+
 
 	<ui:define name="panelCadastro">
 
@@ -65,7 +67,8 @@
 	<ui:define name="colunasTabela" columnsWidth="5%;50%;10%;5%">
 		<pxtfl:column headerValue="Descrição" value="#{obj.produto.descricao}" />
 		<pxtfl:column headerValue="Estoque" value="#{obj.quantidade}" />
-		<pxtfl:column headerValue="Estoque em Recebimento" value="#{obj.quantidadeRecebimento}" />
+		<pxtfl:column headerValue="Estoque em Recebimento"
+			value="#{obj.quantidadeRecebimento}" />
 
 	</ui:define>
 </ui:composition>

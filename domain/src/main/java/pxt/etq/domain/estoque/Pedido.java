@@ -28,35 +28,44 @@ public class Pedido implements Serializable {
 	private ItemPedido item;
 	@Column(name = "DATAPED")
 	private Date data;
-	
+
 	public Integer getCodigo() {
 		return codigo;
 	}
+
 	public void setCodigo(Integer codigo) {
 		this.codigo = codigo;
 	}
+
 	public Cliente getCliente() {
 		return cliente;
 	}
+
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}
+
 	public ItemPedido getItem() {
 		return item;
 	}
+
 	public void setItem(ItemPedido item) {
 		this.item = item;
 	}
+
 	public Date getData() {
 		return data;
 	}
+
 	public void setData(Date data) {
 		this.data = data;
 	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(codigo);
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -68,5 +77,5 @@ public class Pedido implements Serializable {
 		Pedido other = (Pedido) obj;
 		return Objects.equals(codigo, other.codigo);
 	}
-	
+
 }
