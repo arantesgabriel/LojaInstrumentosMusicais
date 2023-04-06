@@ -14,9 +14,7 @@ public class EstoqueDAO extends GenericDAO {
 	public Estoque buscarEstoqueAtual(Integer codigoProduto) throws PersistenceException {
 
 		try {
-
 			Criteria criteria = getSession().createCriteria(Estoque.class);
-
 			if (codigoProduto != null) {
 				criteria.add(Restrictions.eq("produto.codigo", codigoProduto));
 			}

@@ -11,7 +11,6 @@ import pxt.etq.domain.business.impl.EstoqueBO;
 import pxt.etq.domain.estoque.Estoque;
 import pxt.etq.domain.estoque.Produto;
 import pxt.framework.business.PersistenceService;
-import pxt.framework.business.TransactionException;
 import pxt.framework.faces.controller.CrudController;
 import pxt.framework.faces.controller.CrudState;
 import pxt.framework.faces.controller.SearchFieldController;
@@ -92,24 +91,38 @@ public class LiberarBean extends CrudController<Estoque> {
 	@Override
 	protected void antesSalvar() throws CrudException {
 		if (getDomain().getQuantidade() == null) {
-			this.msgWarn("A quantidade é um campo obrigatório");
+			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "A quantidade é um campo obrigatório");
 		}
+		if (getDomain().getProduto() == null) {
+			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "O produto é um campo obrigatório");
+		}
+
+		super.antesSalvar();
 	}
 
 	@Override
 	public void salvar(ActionEvent arg0) {
 
 		try {
-			this.antesSalvar();
-			this.addToList(getDomain());
-			getEstadoCrud();
+
+			if (getEstadoCrud() == CrudState.ST_INSERT) {
+				this.antesSalvar();
+				estoqueBO.salvarEstoqueLiberacao(getDomain());
+				msgInfo("Produto movido para o estoque!");
+				this.addToList(domain);
+			}
+
+			if (getEstadoCrud() == CrudState.ST_EDIT) {
+				this.antesSalvar();
+				estoqueBO.salvarEstoqueLiberacao(getDomain());
+				msgInfo("Produto movido para o estoque!");
+				getListagem().clear();
+				this.addToList(domain);
+			}
+
 			this.configuraEstado(CrudState.ST_DEFAULT);
-			estoqueBO.salvarEstoqueLiberacao(getDomain());
-			msgInfo("Produto liberado com sucesso!");
-		} catch (CrudException | PersistenceException | TransactionException e) {
-			msgError(e, e.getMessage());
-			e.printStackTrace();
-		} catch (ValidationException e) {
+
+		} catch (CrudException | ValidationException | PersistenceException e) {
 			msgWarn(e.getMessage());
 			e.printStackTrace();
 		}

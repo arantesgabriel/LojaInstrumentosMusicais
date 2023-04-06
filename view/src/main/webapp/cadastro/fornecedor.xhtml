@@ -19,23 +19,23 @@
 
 	<ui:define name="panelCadastro">
 
-		<pxt:panelGrid id="panelCodigoDescricao" columnsWidth="5%;10%;5%"
-			width="50%">
-			<h:outputLabel value="Código" styleClass="outputText" />
-			<h:outputLabel value="Nome" styleClass="outputText" />
-			<h:outputLabel value="CNPJ" styleClass="outputText" />
+		<pxt:panelGrid id="panelCodigoDescricao" columnsWidth="10%;80%;10%"
+			width="100%">
+			<h:outputLabel value="Código:" styleClass="outputText" />
+			<h:outputLabel value="Nome:" styleClass="outputText" />
+			<h:outputLabel value="CNPJ:" styleClass="outputText" />
 
 			<h:inputText value="#{fornecedorBean.domain.codigo}"
-				style="width:95%" disabled="#{fornecedorBean.disabledOnIns}">
+				style="width:90%" disabled="#{fornecedorBean.disabledOnIns}">
 				<pxt:onlyNumber />
 			</h:inputText>
 
 			<h:inputText value="#{fornecedorBean.domain.nome}" maxlength="110"
-				style="width:98%" disabled="#{fornecedorBean.disabledOnDefault}">
+				style="width:99%" disabled="#{fornecedorBean.disabledOnDefault}">
 				<pxt:upperCase />
 			</h:inputText>
 
-			<h:inputText value="#{fornecedorBean.domain.cnpj}" style="width:95%"
+			<h:inputText value="#{fornecedorBean.domain.cnpj}" style="width:100%"
 				maxlength="14" disabled="#{fornecedorBean.disabledOnDefault}">
 				<pxt:onlyNumber />
 			</h:inputText>
@@ -43,7 +43,7 @@
 		</pxt:panelGrid>
 	</ui:define>
 
-	<ui:define name="colunasTabela" columnsWidth="5%;15%;10%">
+	<ui:define name="colunasTabela">
 		<pxtfl:column headerValue="Código" value="#{obj.codigo}" />
 		<pxtfl:column headerValue="Nome" value="#{obj.nome}" />
 		<pxtfl:column headerValue="CNPJ" value="#{obj.cnpj}" />

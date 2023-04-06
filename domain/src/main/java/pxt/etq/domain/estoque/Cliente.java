@@ -1,6 +1,7 @@
 package pxt.etq.domain.estoque;
 
 import java.io.Serializable;
+import java.text.Normalizer;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -21,8 +22,10 @@ public class Cliente implements Serializable {
 	@SequenceGenerator(sequenceName = "CODCLIETQ_SEQ", allocationSize = 1, name = "CODCLIETQ_SEQ")
 	@Column(name = "CODCLI")
 	private Integer codigo;
+
 	@Column(name = "NOMCLI")
 	private String nome;
+
 	@Column(name = "CPFCNP")
 	private String cpfCnpj;
 
@@ -39,7 +42,11 @@ public class Cliente implements Serializable {
 	}
 
 	public void setNome(String nome) {
-		nome = nome.replaceAll("[^a-zA-Z ]+", "");
+		if (nome != null) {
+			nome = Normalizer.normalize(nome, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+			nome = nome.replaceAll("\\p{M}", "");
+			nome = nome.replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit} ]", "").trim();
+		}
 		this.nome = nome;
 	}
 

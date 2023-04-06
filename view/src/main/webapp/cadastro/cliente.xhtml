@@ -19,32 +19,26 @@
 
 	<ui:define name="panelCadastro">
 
-		<pxt:panelGrid id="panelCodigoDescricao" columnsWidth="5%;10%;5%;"
-			width="50%">
-			<h:outputLabel value="Código" styleClass="outputText" />
-			<h:outputLabel value="Nome" styleClass="outputText" />
-			<h:outputLabel value="CPF/CNPJ" styleClass="outputText" />
+		<pxt:panelGrid id="panelCodigoDescricao" columnsWidth="10%;80%;10%;" width="100%">
+			<h:outputLabel value="Código:" styleClass="outputText" />
+			<h:outputLabel value="Nome:" styleClass="outputText" />
+			<h:outputLabel value="CPF/CNPJ:" styleClass="outputText" />
 
-			<h:inputText value="#{clienteBean.domain.codigo}" style="width:95%"
-				disabled="#{clienteBean.disabledOnIns}">
+			<h:inputText value="#{clienteBean.domain.codigo}" style="width:90%" disabled="#{clienteBean.disabledOnIns}">
 				<pxt:onlyNumber />
 			</h:inputText>
 
-			<h:inputText value="#{clienteBean.domain.nome}" style="width:98%"
-				pattern="[A-Za-z]+" maxlength="180"
-				disabled="#{clienteBean.disabledOnDefault}">
+			<h:inputText value="#{clienteBean.domain.nome}" style="width:99%" pattern="[A-Za-z]+" maxlength="180" disabled="#{clienteBean.disabledOnDefault}">
 				<pxt:upperCase />
 			</h:inputText>
 
-			<h:inputText value="#{clienteBean.domain.cpfCnpj}" style="width:95%"
-				maxlength="14" disabled="#{clienteBean.disabledOnDefault}">
+			<h:inputText value="#{clienteBean.domain.cpfCnpj}" style="width:100%" maxlength="14" disabled="#{clienteBean.disabledOnDefault}">
 				<pxt:onlyNumber />
 			</h:inputText>
-
 		</pxt:panelGrid>
 	</ui:define>
 
-	<ui:define name="colunasTabela" columnsWidth="10%;30%;25%;">
+	<ui:define name="colunasTabela">
 		<pxtfl:column headerValue="Código" value="#{obj.codigo}" />
 		<pxtfl:column headerValue="Nome" value="#{obj.nome}" />
 		<pxtfl:column headerValue="CPF/CNPJ" value="#{obj.cpfCnpj}" />

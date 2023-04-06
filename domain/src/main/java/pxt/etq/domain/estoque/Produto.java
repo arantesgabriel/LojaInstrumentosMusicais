@@ -2,6 +2,7 @@ package pxt.etq.domain.estoque;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.Normalizer;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -24,12 +25,16 @@ public class Produto implements Serializable {
 	@SequenceGenerator(sequenceName = "CODPRO_SEQ", allocationSize = 1, name = "CODPRO_SEQ")
 	@Column(name = "CODPRO")
 	private Integer codigo;
+	
 	@Column(name = "DESPRO")
 	private String descricao;
+	
 	@Column(name = "INDATV")
 	private Boolean indicadorAtivo = true;
+	
 	@Column(name = "VLRPRO")
 	private BigDecimal valor;
+	
 	@ManyToOne
 	@JoinColumn(name = "CODFRN", referencedColumnName = "CODFRN")
 	private Fornecedor fornecedor;
@@ -47,7 +52,11 @@ public class Produto implements Serializable {
 	}
 
 	public void setDescricao(String descricao) {
-		descricao = descricao.replaceAll("[^a-zA-Z ]+", "");
+		if (descricao != null) {
+			descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+			descricao = descricao.replaceAll("\\p{M}", "");
+			descricao = descricao.replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit} ]", "").trim();
+		}
 		this.descricao = descricao;
 	}
 

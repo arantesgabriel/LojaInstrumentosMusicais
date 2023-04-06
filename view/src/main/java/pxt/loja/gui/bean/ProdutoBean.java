@@ -1,5 +1,6 @@
 package pxt.loja.gui.bean;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -16,7 +17,6 @@ import pxt.framework.faces.controller.CrudState;
 import pxt.framework.faces.controller.SearchFieldController;
 import pxt.framework.faces.exception.CrudException;
 import pxt.framework.persistence.PersistenceException;
-import pxt.framework.validation.ValidationException;
 
 // Sinaliza que essa classe será a controladora
 
@@ -52,11 +52,6 @@ public class ProdutoBean extends CrudController<Produto> {
 	@Override
 	public PersistenceService getPersistenceService() {
 		return persistenceService;
-	}
-
-	@Override
-	protected void antesSalvar() throws CrudException {
-		domain.setIndicadorAtivo(true);
 	}
 
 	public Fornecedor getFornecedorNaoNulo() {
@@ -98,17 +93,53 @@ public class ProdutoBean extends CrudController<Produto> {
 	}
 
 	@Override
+	protected void antesSalvar() throws CrudException {
+
+		if (getDomain().getDescricao() == null || getDomain().getDescricao().isEmpty()) {
+			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "O campo descrição é obrigatório");
+		}
+		
+		if (domain.getValor() == null) {
+			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "O campo valor é obrigatório.");
+		}
+		
+		if (domain.getFornecedor() == null) {
+			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "O campo fornecedor é obrigatório.");
+		}
+		
+		if (domain.getDescricao().length() < 5) {
+			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "É necessário ter no mínimo 5 caracteres no campo descrição");
+		}
+		if (domain.getValor().compareTo(BigDecimal.ZERO) <= 0) {
+			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "O valor digitado deve ser maior que zero.");
+		} 
+		
+		domain.setIndicadorAtivo(true);
+
+	}
+
+	@Override
 	public void salvar(ActionEvent arg0) {
 		try {
-			this.addToList(getDomain());
-			getEstadoCrud();
+
+			if (getEstadoCrud() == CrudState.ST_INSERT) {
+				this.antesSalvar();
+				produtoBO.salvarProduto(domain);
+				this.msgInfo("Produto cadastrado com sucesso!");
+				this.addToList(getDomain());
+			}
+
+			if (getEstadoCrud() == CrudState.ST_EDIT) {
+				this.antesSalvar();
+				produtoBO.salvarProduto(domain);
+				this.msgInfo("Produto cadastrado com sucesso!");
+				getListagem().clear();
+				this.addToList(getDomain());
+			}
+
 			this.configuraEstado(CrudState.ST_DEFAULT);
-			produtoBO.salvarProduto(domain);
-			this.msgInfo("Produto cadastrado com sucesso!");
-		} catch (ValidationException e) {
-			this.msgWarn(e.getMessage());
-			e.printStackTrace();
-		} catch (PersistenceException e) {
+
+		} catch (CrudException | PersistenceException e) {
 			this.msgWarn(e.getMessage());
 			e.printStackTrace();
 		}

@@ -22,13 +22,13 @@
 		<pxt:panelGrid id="panelCodigoDescricao"
 			columnsWidth="5%;10%;10%;10%;5%" width="100%">
 
-			<h:outputLabel value="Código" styleClass="outputText" />
+			<h:outputLabel value="Código:" styleClass="outputText" />
 
-			<h:outputLabel value="Descrição" styleClass="outputText" />
+			<h:outputLabel value="Descrição:" styleClass="outputText" />
 
-			<h:outputLabel value="Valor" styleClass="outputText" />
+			<h:outputLabel value="Valor:" styleClass="outputText" />
 
-			<h:outputLabel value="Fornecedor" styleClass="outputText" />
+			<h:outputLabel value="Fornecedor:" styleClass="outputText" />
 
 			<h:panelGroup>
 				<h:selectBooleanCheckbox
@@ -47,9 +47,11 @@
 				<pxt:upperCase />
 			</h:inputText>
 
-			<h:inputText value="#{produtoBean.domain.valor}" style="width:95%"
+			<h:inputText value="#{produtoBean.domain.valor}" maxlength="19" style="width:95%"
 				disabled="#{produtoBean.disabledOnDefault}">
 				<pxt:onlyNumber />
+				<f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
+				<pxt:convertCurrency />
 			</h:inputText>
 
 			<pxtfl:searchField value="Pesquisar" id="searchFornecedor"
@@ -88,7 +90,7 @@
 		<pxtfl:column headerValue="Código" value="#{obj.codigo}" />
 		<pxtfl:column headerValue="Descrição" value="#{obj.descricao}" />
 		<pxtfl:column headerValue="Fornecedor" value="#{obj.fornecedor.nome}" />
-		<pxtfl:column headerValue="Valor" value="#{obj.valor}" />
+		<pxtfl:column headerValue="Valor" value="#{obj.valor}" typeFormat="currency"/>
 		<pxtfl:column headerValue="Status"
 			value="#{obj.indicadorAtivo ? 'Produto Ativo' : 'Produto Inativo'}" />
 	</ui:define>
