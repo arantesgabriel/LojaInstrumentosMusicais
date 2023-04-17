@@ -44,6 +44,7 @@ public class Fornecedor implements Serializable {
 	public void setNome(String nome) {
 		if (nome != null) {
 			nome = Normalizer.normalize(nome, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+			nome = nome.replaceAll("[0-9]", "");
 			nome = nome.replaceAll("\\p{M}", "");
 			nome = nome.replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit} ]", "").trim();
 		}
@@ -55,6 +56,11 @@ public class Fornecedor implements Serializable {
 	}
 
 	public void setCnpj(String cnpj) {
+		if (cnpj != null) {
+			cnpj = Normalizer.normalize(cnpj, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+			cnpj = cnpj.replaceAll("\\p{M}", "");
+			cnpj = cnpj.replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit} ]", "").trim();
+		}
 		this.cnpj = cnpj;
 	}
 

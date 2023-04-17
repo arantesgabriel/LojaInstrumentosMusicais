@@ -6,9 +6,10 @@ import javax.ejb.Stateless;
 import com.pxt.loja.persistence.dao.EstoqueDAO;
 import com.pxt.loja.persistence.dao.ProdutoDAO;
 
-import pxt.etq.domain.estoque.Estoque;
 import pxt.etq.domain.estoque.Produto;
+import pxt.framework.business.TransactionException;
 import pxt.framework.persistence.PersistenceException;
+import pxt.framework.validation.ValidationException;
 
 @Stateless
 public class ProdutoBO {
@@ -22,18 +23,15 @@ public class ProdutoBO {
 	@EJB
 	private ProdutoDAO produtoDAO;
 
-	public void salvarProduto(Produto domain) throws PersistenceException {
+	public void salvarProduto(Produto domain) throws TransactionException, ValidationException, PersistenceException {
 
 		// Cria o produto e já o cadastra com o estoque zerado.
-		try {
-			Estoque estoque = new Estoque();
-			estoque.setProduto(domain);
-			estoque.setQuantidade(0);
-			estoque.setQuantidadeRecebimento(0);
-			produtoDAO.save(domain);
-			estoqueDao.save(estoque);
-		} catch (PersistenceException e) {
-			e.printStackTrace();
+
+		if (produtoDAO.buscarProduto(domain).isEmpty()) {
+			produtoDAO.saveOrUpdate(domain);
+			estoqueBO.criarEstoque(domain);
+		} else {
+			throw new ValidationException("Produto já cadastrado");
 		}
 
 	}

@@ -91,14 +91,14 @@ public class ReceberBean extends CrudController<Estoque> {
 	@Override
 	protected void antesSalvar() throws CrudException {
 
-		if (getDomain().getQuantidadeRecebimento() == null ) {
+		if (getDomain().getQuantidadeRecebimento() == null) {
 			throw new CrudException(CrudException.ERROR_EXCEPTION_TYPE, "A quantidade é um campo obrigatório");
 		}
-		
+
 		if (getDomain().getProduto() == null) {
 			throw new CrudException(CrudException.ERROR_EXCEPTION_TYPE, "O produto é um campo obrigatório");
 		}
-		
+
 		super.antesSalvar();
 	}
 
@@ -124,7 +124,13 @@ public class ReceberBean extends CrudController<Estoque> {
 
 			this.configuraEstado(CrudState.ST_DEFAULT);
 
-		} catch (CrudException | PersistenceException | ValidationException e) {
+		} catch (PersistenceException e) {
+			msgWarn(e.getMessage());
+			e.printStackTrace();
+		} catch (CrudException e) {
+			msgWarn(e.getMessage());
+			e.printStackTrace();
+		} catch (ValidationException e) {
 			msgWarn(e.getMessage());
 			e.printStackTrace();
 		}

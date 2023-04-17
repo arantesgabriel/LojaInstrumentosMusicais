@@ -16,7 +16,7 @@ public class ClienteDAO extends GenericDAO {
 		try {
 			Criteria criteria = getSession().createCriteria(Cliente.class);
 			if (cpfCnpj != null) {
-				criteria.add(Restrictions.eq("cpfCnpj", cpfCnpj));
+				criteria.add(Restrictions.eq("cliente.cpfCnpj", cpfCnpj));
 			}
 			return (Cliente) criteria.uniqueResult();
 		} catch (Exception e) {

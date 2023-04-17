@@ -29,7 +29,7 @@
 
 			<pxtfl:searchField value="Pesquisar" id="searchProduto"
 				controller="#{liberarBean.searchProduto}" modalTitle="Produto"
-				disabled="#{liberarBean.disabledOnDefault}"
+				disabledOn="#{liberarBean.disabledOnDefault}"
 				searchProperty="descricao"
 				render="mensagemGeral,messagePane,@this,btnNew, btnCancel, btnSave, pnlInfo, pnlMsg, pnlAcoCom, btnCancelar, btnNovo, btnSalvar, btnCnfAbg, pnlImagem, table, pnlTable">
 				<ui:define name="filtros">

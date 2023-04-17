@@ -12,11 +12,13 @@ import pxt.etq.domain.business.impl.ProdutoBO;
 import pxt.etq.domain.estoque.Fornecedor;
 import pxt.etq.domain.estoque.Produto;
 import pxt.framework.business.PersistenceService;
+import pxt.framework.business.TransactionException;
 import pxt.framework.faces.controller.CrudController;
 import pxt.framework.faces.controller.CrudState;
 import pxt.framework.faces.controller.SearchFieldController;
 import pxt.framework.faces.exception.CrudException;
 import pxt.framework.persistence.PersistenceException;
+import pxt.framework.validation.ValidationException;
 
 // Sinaliza que essa classe será a controladora
 
@@ -98,23 +100,22 @@ public class ProdutoBean extends CrudController<Produto> {
 		if (getDomain().getDescricao() == null || getDomain().getDescricao().isEmpty()) {
 			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "O campo descrição é obrigatório");
 		}
-		
+
 		if (domain.getValor() == null) {
 			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "O campo valor é obrigatório.");
 		}
-		
+
 		if (domain.getFornecedor() == null) {
 			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "O campo fornecedor é obrigatório.");
 		}
-		
+
 		if (domain.getDescricao().length() < 5) {
-			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "É necessário ter no mínimo 5 caracteres no campo descrição");
+			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE,
+					"É necessário ter no mínimo 5 caracteres no campo descrição");
 		}
 		if (domain.getValor().compareTo(BigDecimal.ZERO) <= 0) {
 			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "O valor digitado deve ser maior que zero.");
-		} 
-		
-		domain.setIndicadorAtivo(true);
+		}
 
 	}
 
@@ -132,7 +133,7 @@ public class ProdutoBean extends CrudController<Produto> {
 			if (getEstadoCrud() == CrudState.ST_EDIT) {
 				this.antesSalvar();
 				produtoBO.salvarProduto(domain);
-				this.msgInfo("Produto cadastrado com sucesso!");
+				this.msgInfo("Produto editado com sucesso!");
 				getListagem().clear();
 				this.addToList(getDomain());
 			}
@@ -140,6 +141,12 @@ public class ProdutoBean extends CrudController<Produto> {
 			this.configuraEstado(CrudState.ST_DEFAULT);
 
 		} catch (CrudException | PersistenceException e) {
+			this.msgWarn(e.getMessage());
+			e.printStackTrace();
+		} catch (TransactionException e) {
+			this.msgWarn(e.getMessage());
+			e.printStackTrace();
+		} catch (ValidationException e) {
 			this.msgWarn(e.getMessage());
 			e.printStackTrace();
 		}

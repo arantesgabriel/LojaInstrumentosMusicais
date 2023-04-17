@@ -6,6 +6,8 @@ import javax.ejb.Stateless;
 import com.pxt.loja.persistence.dao.EstoqueDAO;
 
 import pxt.etq.domain.estoque.Estoque;
+import pxt.etq.domain.estoque.Produto;
+import pxt.framework.business.TransactionException;
 import pxt.framework.persistence.PersistenceException;
 import pxt.framework.validation.ValidationException;
 
@@ -32,7 +34,7 @@ public class EstoqueBO {
 
 	public void salvarEstoqueLiberacao(Estoque domain) throws PersistenceException, ValidationException {
 
-		if (domain.getQuantidadeRecebimento() <= 0) {
+		if (domain.getQuantidade() <= 0) {
 			throw new ValidationException("Quantidade do produto não pode ser menor ou igual a zero");
 		}
 
@@ -45,5 +47,17 @@ public class EstoqueBO {
 		estoqueAtual.setQuantidadeRecebimento(estoqueAtual.getQuantidadeRecebimento() - domain.getQuantidade());
 		estoqueDao.saveOrUpdate(estoqueAtual);
 	}
-
+	
+	public void criarEstoque(Produto domain) throws TransactionException {
+		try {
+			Estoque estoque = new Estoque();
+			estoque.setProduto(domain);
+			estoque.setQuantidade(0);
+			estoque.setQuantidadeRecebimento(0);
+			estoqueDao.save(estoque);
+		} catch (Exception e) {
+			throw new TransactionException("Erro ao criar estoque", e);
+		}
+	}
+	
 }

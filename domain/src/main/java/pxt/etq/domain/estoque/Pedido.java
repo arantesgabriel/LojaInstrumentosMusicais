@@ -6,10 +6,12 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -18,14 +20,15 @@ public class Pedido implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CODPEDETQ_SEQ")
+	@SequenceGenerator(sequenceName = "CODPEDETQ_SEQ", allocationSize = 1, name = "CODPEDETQ_SEQ")
 	@Column(name = "CODPED")
 	private Integer codigo;
+
 	@ManyToOne
 	@JoinColumn(name = "CODCLI", referencedColumnName = "CODCLI")
 	private Cliente cliente;
-	@OneToOne
-	@JoinColumn(name = "NUMID", referencedColumnName = "NUMID")
-	private ItemPedido item;
+
 	@Column(name = "DATAPED")
 	private Date data;
 
@@ -45,20 +48,19 @@ public class Pedido implements Serializable {
 		this.cliente = cliente;
 	}
 
-	public ItemPedido getItem() {
-		return item;
-	}
-
-	public void setItem(ItemPedido item) {
-		this.item = item;
-	}
-
 	public Date getData() {
 		return data;
 	}
 
 	public void setData(Date data) {
 		this.data = data;
+	}
+
+	public Cliente getClienteNaoNulo() {
+		if (cliente == null) {
+			return this.cliente = new Cliente();
+		}
+		return this.cliente;
 	}
 
 	@Override

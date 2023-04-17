@@ -44,6 +44,7 @@ public class Cliente implements Serializable {
 	public void setNome(String nome) {
 		if (nome != null) {
 			nome = Normalizer.normalize(nome, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+			nome = nome.replaceAll("[0-9]", "");
 			nome = nome.replaceAll("\\p{M}", "");
 			nome = nome.replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit} ]", "").trim();
 		}
@@ -55,7 +56,18 @@ public class Cliente implements Serializable {
 	}
 
 	public void setCpfCnpj(String cpfCnpj) {
+		if (cpfCnpj != null) {
+			cpfCnpj = Normalizer.normalize(cpfCnpj, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+",
+					"");
+			cpfCnpj = cpfCnpj.replaceAll("\\p{M}", "");
+			cpfCnpj = cpfCnpj.replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit} ]", "").trim();
+		}
 		this.cpfCnpj = cpfCnpj;
+	}
+
+	@Override
+	public String toString() {
+		return nome;
 	}
 
 	@Override

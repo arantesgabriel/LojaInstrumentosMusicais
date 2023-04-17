@@ -17,31 +17,64 @@
 	<ui:param name="backingBean" value="#{pedidoBean}" />
 	<ui:param name="titulo" value="Pedido" />
 
-	<ui:define name="table"></ui:define>
+	<ui:define name="btnFind"></ui:define>
+
 	<ui:define name="panelCadastro">
 
-		<pxt:panelGrid id="panelCodigoDescricao" columnsWidth="100%;"
+		<pxt:panelGrid id="panelCodigoDescricao" columnsWidth="40%;40%;15%;5%"
 			width="100%">
 
-			<pxtfl:searchField value="Adicionar" id="searchPedido"
-				controller="#{pedidoBean.searchProduto}" modalTitle="Pedido(s)"
-				multiple="true" type="button" clearFields="true"
-				render="slcTpPedido,slcFormPag,slcFilFat,slcFilEtq,slcBloqueio,iptNumPedVnd,tabelaProdutos@this"
-				styleClass="btnToolbar"
-				style="background:transparent url(#{facesContext.externalContext.requestContextPath}/resources/img/search2_16x16.png) no-repeat left"
-				disabledOn="#{pedidoBean.disabledOnDefault}">
+			<h:outputLabel value="Cliente:" styleClass="outputText" />
+
+			<h:outputLabel value="Produto:" styleClass="outputText" />
+
+			<h:outputLabel value="Quantidade:" styleClass="outputText" />
+
+			<h:outputLabel value="" styleClass="outputText" />
+
+			<pxtfl:searchField value="Pesquisar" id="searchCliente"
+				controller="#{pedidoBean.searchCliente}"
+				disabledOn="#{pedidoBean.disabledOnDefault}" modalTitle="Cliente"
+				searchProperty="nome">
+				<ui:define name="filtros">
+					<pxt:panelGrid columnsWidth="10%;90%">
+						<h:outputText value="CPF/CNPJ:" styleClass="outputText" />
+						<h:outputText value="Nome:" styleClass="outputText" />
+						<h:inputText
+							value="#{pedidoBean.searchCliente.searchObject.cpfCnpj}"
+							style="width: 30%;" maxlength="14">
+						</h:inputText>
+						<h:inputText value="#{pedidoBean.searchCliente.searchObject.nome}"
+							maxlength="180" style="width: 20%;">
+							<pxt:upperCase />
+						</h:inputText>
+					</pxt:panelGrid>
+				</ui:define>
+
+				<ui:define name="colunas">
+					<pxtfl:column headerValue="Código" value="#{obj.nome}"
+						columnWidth="10%" />
+					<pxtfl:column headerValue="Nome" value="#{obj.cpfCnpj}"
+						columnWidth="10%" />
+				</ui:define>
+			</pxtfl:searchField>
+
+			<pxtfl:searchField value="Pesquisar" id="searchProduto"
+				controller="#{pedidoBean.searchProduto}" modalTitle="Produto"
+				disabledOn="#{pedidoBean.disabledOnDefault}"
+				searchProperty="descricao">
 				<ui:define name="filtros">
 					<pxt:panelGrid columnsWidth="10%;90%">
 						<h:outputText value="Código:" styleClass="outputText" />
 						<h:inputText
 							value="#{pedidoBean.searchProduto.searchObject.codigo}"
-							style="width: 15%;">
+							maxlength="14" style="width: 10%;">
 							<pxt:onlyNumber />
 						</h:inputText>
 						<h:outputText value="Descrição:" styleClass="outputText" />
 						<h:inputText
 							value="#{pedidoBean.searchProduto.searchObject.descricao}"
-							style="width: 15%;">
+							style="width:30%;">
 						</h:inputText>
 					</pxt:panelGrid>
 				</ui:define>
@@ -53,31 +86,39 @@
 				</ui:define>
 			</pxtfl:searchField>
 
-			<rich:panel id="tabPanelItens"
-				bodyClass="pxt-rich-body-panel-detail zeroBodySpace">
-				<rich:dataTable id="tabelaProdutos" var="item"
-					rowClasses="pxt-odd-row, pxt-even-row"
-					value="#{pedidoBean.listaDeProdutosSelecionados}"
-					styleClass="stable" footerClass="pxt-rf-dt-ftr-c"
-					rowKeyVar="keyVar" rows="14" render="tabelaProdutosScroller">
-					<ui:param name="columnGroupId" value="tabelaProdutos" />
-					<pxtfl:column headerValue="Código" value="#{produto.codigo}"
-						textAlign="center" />
-					<pxtfl:column headerValue="Descrição" value="#{produto.descricao}" />
-					<pxtfl:column headerValue="Preço" value="#{produto.preco}" />
-					<rich:column value="#{quantidade}">
-						<f:facet name="header">
-							<h:outputText value="Quantidade" />
-						</f:facet>
-						<h:inputText value="#{quantidade}" id="Quantidade"
-							style="background: none; text-align: center; text-align: center; width: 100%; border-style:solid; border-color:#85ADE5; border-radius:3px;">
-							<pxt:onlyNumber />
-						</h:inputText>
-					</rich:column>
-				</rich:dataTable>
-			</rich:panel>
+			<h:inputText value="#{pedidoBean.domain.quantidade}"
+				disabled="#{pedidoBean.disabledOnDefault}" maxlength="18"
+				style="width:90%">
+				<pxt:onlyNumber />
+			</h:inputText>
+
+			<h:commandButton value="Adicionar"
+				action="#{pedidoBean.adicionarItem}" render="tabelaProdutos"
+				style="width:98%" />
 
 		</pxt:panelGrid>
 	</ui:define>
+
+	<ui:define name="table">
+		<rich:panel id="tabPanelItens"
+			bodyClass="pxt-rich-body-panel-detail zeroBodySpace">
+			<rich:dataTable id="tabelaProdutos" var="item" value="#{pedidoBean.listaDeProdutosSelecionados}"
+				rowClasses="pxt-odd-row, pxt-even-row" styleClass="stable"
+				footerClass="pxt-rf-dt-ftr-c" rowKeyVar="keyVar" rows="14">/>
+
+				<pxtfl:column headerValue="Código" value="#{item.produto.codigo}"
+					textAlign="center" />
+				<pxtfl:column headerValue="Descrição" value="#{item.produto.descricao}" />
+				<pxtfl:column headerValue="Quantidade" value="#{item.quantidade}" />
+
+				<f:facet name="footer">
+					<rich:dataScroller id="tabelaProdutosScroller"
+						renderIfSinglePage="false" align="left" render="tabelaProdutos" />
+				</f:facet>
+
+			</rich:dataTable>
+		</rich:panel>
+	</ui:define>
+
 </ui:composition>
 </html>
