@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,6 +33,7 @@ public class EstoqueMovimentacao implements Serializable {
 	private Date data;
 	@Column(name = "QDEMOV")
 	private Integer quantidadeMovimentada;
+	@Enumerated(EnumType.STRING)
 	@Column(name = "TIPOP")
 	private TipoOperacao tipoOperacao;
 

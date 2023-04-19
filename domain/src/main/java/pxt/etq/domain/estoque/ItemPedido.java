@@ -79,18 +79,4 @@ public class ItemPedido implements Serializable {
 		this.valorItem = valorItem;
 	}
 
-	public Produto getProdutoNaoNulo() {
-		if (produto == null) {
-			return new Produto();
-		}
-		return this.produto;
-	}
-
-	public Pedido getPedidoNaoNulo() {
-		if (pedido == null) {
-			pedido = new Pedido();
-		}
-		return this.pedido;
-	}
-
 }

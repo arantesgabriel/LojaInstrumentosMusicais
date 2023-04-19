@@ -10,6 +10,7 @@
 		<!-- Entidades do Sistema de Estoque -->
  		<class>pxt.etq.domain.estoque.Cliente</class>
  		<class>pxt.etq.domain.estoque.Estoque</class>
+ 		<class>pxt.etq.domain.estoque.EstoqueMovimentacao</class>
  		<class>pxt.etq.domain.estoque.Fornecedor</class>
  		<class>pxt.etq.domain.estoque.ItemPedido</class>
  		<class>pxt.etq.domain.estoque.Pedido</class>

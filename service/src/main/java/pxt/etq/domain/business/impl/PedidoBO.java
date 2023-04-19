@@ -1,5 +1,6 @@
 package pxt.etq.domain.business.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,47 +20,52 @@ import pxt.etq.domain.estoque.ItemPedido;
 import pxt.etq.domain.estoque.Pedido;
 import pxt.etq.domain.estoque.Produto;
 import pxt.etq.domain.estoque.TipoOperacao;
-import pxt.framework.business.TransactionException;
 import pxt.framework.persistence.PersistenceException;
 import pxt.framework.validation.ValidationException;
 
 @Stateless
 public class PedidoBO {
 
-	@EJB private PedidoDAO pedidoDao;
-	@EJB private ItemPedidoDAO itemPedidoDao;
-	@EJB private ProdutoDAO produtoDAO;
-	@EJB private ClienteDAO clienteDAO;
-	@EJB private EstoqueDAO estoqueDAO;
-
+	@EJB
+	private PedidoDAO pedidoDao;
+	@EJB
+	private ItemPedidoDAO itemPedidoDao;
+	@EJB
+	private ProdutoDAO produtoDAO;
+	@EJB
+	private ClienteDAO clienteDAO;
+	@EJB
+	private EstoqueDAO estoqueDAO;
+	@EJB
+	private MovimentacaoBO movimentacaoBO;
+	private BigDecimal total = BigDecimal.ZERO;
 	List<ItemPedido> itemPedido = new ArrayList<ItemPedido>();
 
-	public void efetuarPedido(ItemPedido domain, List<ItemPedido> listaDeItens) throws TransactionException, PersistenceException, ValidationException {
+	public void efetuarPedido(Pedido pedido, List<ItemPedido> listaDeItens)
+			throws PersistenceException, ValidationException {
 
-		Pedido pedido = new Pedido();
 		Date data = new Date();
-		pedido.setCliente(domain.getPedido().getCliente());
 		pedido.setData(data);
 		pedidoDao.saveOrUpdate(pedido);
 
 		for (ItemPedido itemPedido : listaDeItens) {
 			itemPedido.setPedido(pedido);
+			alterarEstoque(itemPedido.getProduto(), itemPedido.getQuantidade());
 			itemPedidoDao.save(itemPedido);
+			EstoqueMovimentacao novaMovimentacao = new EstoqueMovimentacao();
+			novaMovimentacao.setProduto(itemPedido.getProduto());
+			novaMovimentacao.setData(data);
+			novaMovimentacao.setQuantidadeMovimentada(itemPedido.getQuantidade());
+			novaMovimentacao.setTipoOperacao(TipoOperacao.VENDA);
+			movimentacaoBO.criarMovimentacao(novaMovimentacao);
 		}
-
-		EstoqueMovimentacao estoqueMovimentacao = new EstoqueMovimentacao();
-		estoqueMovimentacao.setProduto(domain.getProduto());
-		estoqueMovimentacao.setData(data);
-		estoqueMovimentacao.setQuantidadeMovimentada(domain.getQuantidade());
-		estoqueMovimentacao.setTipoOperacao(TipoOperacao.VENDA);
-		decrementarEstoque(domain.getProduto(), domain.getQuantidade());
 
 	}
 
-	public void decrementarEstoque(Produto produto, Integer quantidade) throws ValidationException {
+	public void alterarEstoque(Produto produto, Integer quantidade) throws ValidationException {
 
 		try {
-			
+
 			Estoque estoqueAtual = estoqueDAO.buscarEstoqueAtual(produto.getCodigo());
 
 			if (estoqueAtual.getQuantidade() < quantidade) {
@@ -72,6 +78,12 @@ public class PedidoBO {
 		} catch (PersistenceException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public BigDecimal calcularTotalPedido(BigDecimal preco, Integer quantidade) {
+
+		total = total.add(preco.multiply(new BigDecimal(quantidade)));
+		return total;
 	}
 
 }

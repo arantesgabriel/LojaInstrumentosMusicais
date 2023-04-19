@@ -16,7 +16,6 @@
 	<ui:param name="form_id" value="formPedido" />
 	<ui:param name="backingBean" value="#{pedidoBean}" />
 	<ui:param name="titulo" value="Pedido" />
-
 	<ui:define name="btnFind"></ui:define>
 
 	<ui:define name="panelCadastro">
@@ -33,28 +32,26 @@
 			<h:outputLabel value="" styleClass="outputText" />
 
 			<pxtfl:searchField value="Pesquisar" id="searchCliente"
-				controller="#{pedidoBean.searchCliente}"
-				disabledOn="#{pedidoBean.disabledOnDefault}" modalTitle="Cliente"
-				searchProperty="nome">
+				controller="#{pedidoBean.searchCliente}" modalTitle="Cliente"
+				disabledOn="#{pedidoBean.disabledOnDefault}" searchProperty="nome">
 				<ui:define name="filtros">
 					<pxt:panelGrid columnsWidth="10%;90%">
 						<h:outputText value="CPF/CNPJ:" styleClass="outputText" />
-						<h:outputText value="Nome:" styleClass="outputText" />
 						<h:inputText
 							value="#{pedidoBean.searchCliente.searchObject.cpfCnpj}"
-							style="width: 30%;" maxlength="14">
+							maxlength="14" style="width: 30%;">
+							<pxt:onlyNumber />
 						</h:inputText>
+						<h:outputText value="Nome:" styleClass="outputText" />
 						<h:inputText value="#{pedidoBean.searchCliente.searchObject.nome}"
-							maxlength="180" style="width: 20%;">
-							<pxt:upperCase />
+							maxlength="180" style="width:30%;">
 						</h:inputText>
 					</pxt:panelGrid>
 				</ui:define>
-
 				<ui:define name="colunas">
-					<pxtfl:column headerValue="Código" value="#{obj.nome}"
+					<pxtfl:column headerValue="CPF/CNPJ" value="#{obj.cpfCnpj}"
 						columnWidth="10%" />
-					<pxtfl:column headerValue="Nome" value="#{obj.cpfCnpj}"
+					<pxtfl:column headerValue="Nome" value="#{obj.nome}"
 						columnWidth="10%" />
 				</ui:define>
 			</pxtfl:searchField>
@@ -74,7 +71,7 @@
 						<h:outputText value="Descrição:" styleClass="outputText" />
 						<h:inputText
 							value="#{pedidoBean.searchProduto.searchObject.descricao}"
-							style="width:30%;">
+							maxlength="180" style="width:30%;">
 						</h:inputText>
 					</pxt:panelGrid>
 				</ui:define>
@@ -86,7 +83,7 @@
 				</ui:define>
 			</pxtfl:searchField>
 
-			<h:inputText value="#{pedidoBean.domain.quantidade}"
+			<h:inputText value="#{pedidoBean.quantidade}"
 				disabled="#{pedidoBean.disabledOnDefault}" maxlength="18"
 				style="width:90%">
 				<pxt:onlyNumber />
@@ -102,20 +99,38 @@
 	<ui:define name="table">
 		<rich:panel id="tabPanelItens"
 			bodyClass="pxt-rich-body-panel-detail zeroBodySpace">
-			<rich:dataTable id="tabelaProdutos" var="item" value="#{pedidoBean.listaDeProdutosSelecionados}"
+			<rich:dataTable id="tabelaProdutos" var="item"
+				value="#{pedidoBean.listaItens}"
 				rowClasses="pxt-odd-row, pxt-even-row" styleClass="stable"
 				footerClass="pxt-rf-dt-ftr-c" rowKeyVar="keyVar" rows="14">/>
 
 				<pxtfl:column headerValue="Código" value="#{item.produto.codigo}"
 					textAlign="center" />
-				<pxtfl:column headerValue="Descrição" value="#{item.produto.descricao}" />
-				<pxtfl:column headerValue="Quantidade" value="#{item.quantidade}" />
+				<pxtfl:column headerValue="Descrição"
+					value="#{item.produto.descricao}" />
+				<pxtfl:column headerValue="Quantidade" value="#{item.quantidade}"
+					textAlign="center" />
+				<pxtfl:column headerValue="Preço unitário"
+					value="#{item.produto.valor}" textAlign="center" />
+				<pxtfl:column headerValue="Total"
+					value="#{item.produto.valor*item.quantidade}"
+					footerValue = "#{pedidoBean.total}" textAlign="center" />
+
+				<rich:column rendered="${!empty rederedEdit ? rederedEdit: true}"
+					exportColumn="false" width="28px">
+					<a4j:commandLink id="btnEditTable" accesskey="E"
+						actionListener="#{backingBean.editar}" textAlign="center"
+						render="toolbar, pnlCampos, pnlTable, mensagemGeral, messagePane">
+						<f:param name="VALIDATION_OFF" value="true" />
+						<h:graphicImage title="Editar o registro!" name="editar_16x16.png"
+							library="pxt.framework.faces.img" style="border-width: 0px" />
+					</a4j:commandLink>
+				</rich:column>
 
 				<f:facet name="footer">
 					<rich:dataScroller id="tabelaProdutosScroller"
 						renderIfSinglePage="false" align="left" render="tabelaProdutos" />
 				</f:facet>
-
 			</rich:dataTable>
 		</rich:panel>
 	</ui:define>

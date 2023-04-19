@@ -1,6 +1,6 @@
 package pxt.loja.gui.bean;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -11,9 +11,9 @@ import javax.faces.event.ActionEvent;
 import pxt.etq.domain.business.impl.PedidoBO;
 import pxt.etq.domain.estoque.Cliente;
 import pxt.etq.domain.estoque.ItemPedido;
+import pxt.etq.domain.estoque.Pedido;
 import pxt.etq.domain.estoque.Produto;
 import pxt.framework.business.PersistenceService;
-import pxt.framework.business.TransactionException;
 import pxt.framework.faces.controller.CrudController;
 import pxt.framework.faces.controller.SearchFieldController;
 import pxt.framework.persistence.PersistenceException;
@@ -23,34 +23,32 @@ import pxt.framework.validation.ValidationException;
 
 @ManagedBean
 @ViewScoped
-public class PedidoBean extends CrudController<ItemPedido> {
+public class PedidoBean extends CrudController<Pedido> {
 	private static final long serialVersionUID = 1L;
 
-	private ItemPedido domain;
+	private Pedido domain;
 
 	@EJB
 	private PedidoBO pedidoBO;
-
 	@EJB
 	private PersistenceService persistenceService;
-
 	private SearchFieldController<Cliente> searchCliente;
-
 	private SearchFieldController<Produto> searchProduto;
-
-	private List<ItemPedido> listaDeProdutosSelecionados;
+	private Produto produto;
+	private Integer quantidade;
+	private BigDecimal total;
 
 	@Override
-	public ItemPedido getDomain() {
+	public Pedido getDomain() {
 
 		if (domain == null) {
-			domain = new ItemPedido();
+			domain = new Pedido();
 		}
 		return domain;
 	}
 
 	@Override
-	public void setDomain(ItemPedido domain) {
+	public void setDomain(Pedido domain) {
 		this.domain = domain;
 	}
 
@@ -59,12 +57,39 @@ public class PedidoBean extends CrudController<ItemPedido> {
 		return persistenceService;
 	}
 
-	public Produto getProduto() {
-		return getDomain().getProdutoNaoNulo();
+	public Produto getProdutoNaoNulo() {
+		if (produto == null) {
+			this.produto = new Produto();
+		}
+		return produto;
 	}
 
 	public void setProduto(Produto produto) {
-		getDomain().setProduto(produto);
+		this.produto = produto;
+	}
+
+	public Integer getQuantidade() {
+		return quantidade;
+	}
+
+	public void setQuantidade(Integer quantidade) {
+		this.quantidade = quantidade;
+	}
+
+	public BigDecimal getTotal() {
+		return total;
+	}
+
+	public void setTotal(BigDecimal total) {
+		this.total = total;
+	}
+
+	public List<ItemPedido> getListaItens() {
+		return domain.getItensDoPedido();
+	}
+
+	public void setListaItens(List<ItemPedido> listaItens) {
+		domain.setItemPedido(listaItens);
 	}
 
 	@SuppressWarnings("serial")
@@ -74,12 +99,12 @@ public class PedidoBean extends CrudController<ItemPedido> {
 
 				@Override
 				public Cliente getObject() {
-					return getDomain().getPedidoNaoNulo().getClienteNaoNulo();
+					return getDomain().getClienteNaoNulo();
 				}
 
 				@Override
 				public void setObject(Cliente cliente) {
-					getDomain().getPedidoNaoNulo().setCliente(cliente);
+					getDomain().setCliente(cliente);
 				}
 
 				@Override
@@ -103,7 +128,7 @@ public class PedidoBean extends CrudController<ItemPedido> {
 
 				@Override
 				public Produto getObject() {
-					return getProduto();
+					return getProdutoNaoNulo();
 				}
 
 				@Override
@@ -125,31 +150,23 @@ public class PedidoBean extends CrudController<ItemPedido> {
 		return this.searchProduto;
 	}
 
-	
-	public void setListaDeProdutosSelecionados(List<ItemPedido> produtosSelecionados) {
-		this.listaDeProdutosSelecionados = produtosSelecionados;
-	}
+	public void adicionarItem() {
 
-	public List<ItemPedido> getListaDeProdutosSelecionados() {
-		if (listaDeProdutosSelecionados == null) {
-			listaDeProdutosSelecionados = new ArrayList<ItemPedido>();
-		}
-		return listaDeProdutosSelecionados;
-	}
+		ItemPedido itemPedido = new ItemPedido();
+		itemPedido.setProduto(getProdutoNaoNulo());
+		itemPedido.setQuantidade(getQuantidade());
+		itemPedido.setValorItem(produto.getValor());
+		getListaItens().add(itemPedido);
+		setTotal(pedidoBO.calcularTotalPedido(itemPedido.getValorItem(), quantidade));
 
-	public void adicionarItemALista() {
-		getDomain().setValorItem(getDomain().getProduto().getValor());
-		getListaDeProdutosSelecionados().add(getDomain());
-		domain = new ItemPedido();
 	}
 
 	@Override
 	public void salvar(ActionEvent arg0) {
 		try {
-			pedidoBO.efetuarPedido(domain, listaDeProdutosSelecionados);
+			pedidoBO.efetuarPedido(domain, getListaItens());
+			msgInfo("Pedido realizado com sucesso!");
 		} catch (ValidationException e) {
-			e.printStackTrace();
-		} catch (TransactionException e) {
 			e.printStackTrace();
 		} catch (PersistenceException e) {
 			e.printStackTrace();
