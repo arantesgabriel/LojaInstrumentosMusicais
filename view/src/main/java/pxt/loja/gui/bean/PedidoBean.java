@@ -16,6 +16,7 @@ import pxt.etq.domain.estoque.Produto;
 import pxt.framework.business.PersistenceService;
 import pxt.framework.faces.controller.CrudController;
 import pxt.framework.faces.controller.SearchFieldController;
+import pxt.framework.faces.exception.CrudException;
 import pxt.framework.persistence.PersistenceException;
 import pxt.framework.validation.ValidationException;
 
@@ -150,25 +151,49 @@ public class PedidoBean extends CrudController<Pedido> {
 		return this.searchProduto;
 	}
 
+	public void antesAdicionarItem() throws CrudException {
+
+		if (domain.getCliente().getCodigo() == null) {
+			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "O campo cliente é obrigatório.");
+		} else if (getProdutoNaoNulo().getCodigo() == null) {
+			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE, "O campo produto é obrigatório.");
+		} else if (getQuantidade() == null || getQuantidade() <= 0) {
+			throw new CrudException(CrudException.WARN_EXCEPTION_TYPE,
+					"A quantidade informada deve ser maior que zero.");
+		}
+
+	}
+
 	public void adicionarItem() {
 
-		ItemPedido itemPedido = new ItemPedido();
-		itemPedido.setProduto(getProdutoNaoNulo());
-		itemPedido.setQuantidade(getQuantidade());
-		itemPedido.setValorItem(produto.getValor());
-		getListaItens().add(itemPedido);
-		setTotal(pedidoBO.calcularTotalPedido(itemPedido.getValorItem(), quantidade));
+		try {
+			antesAdicionarItem();
+			ItemPedido itemPedido = new ItemPedido();
+			itemPedido.setProduto(getProdutoNaoNulo());
+			itemPedido.setQuantidade(getQuantidade());
+			itemPedido.setValorItem(produto.getValor());
+			getListaItens().add(itemPedido);
+			setTotal(pedidoBO.calcularTotalPedido(itemPedido.getValorItem(), quantidade));
+		} catch (CrudException e) {
+			msgInfo(e.getMessage());
+		}
 
 	}
 
 	@Override
 	public void salvar(ActionEvent arg0) {
 		try {
+			antesAdicionarItem();
 			pedidoBO.efetuarPedido(domain, getListaItens());
 			msgInfo("Pedido realizado com sucesso!");
 		} catch (ValidationException e) {
+			msgInfo(e.getMessage());
 			e.printStackTrace();
 		} catch (PersistenceException e) {
+			msgInfo(e.getMessage());
+			e.printStackTrace();
+		} catch (CrudException e) {
+			msgInfo(e.getMessage());
 			e.printStackTrace();
 		}
 	}
